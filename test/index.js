@@ -1,134 +1,144 @@
-var helper = require('./helper'),
-    assert = helper.assert,
-    debug = helper.debug;
 
-var Differ = require('../lib/'),
-    differ = new Differ();
+var Differ = require('../../node-document-differ');
 
-// -----------------------
-//  Test
-// --------------------
+module.exports = Differ.Spec('Patcher', {
+  module: require('..'),
+  engine: require('patcher'),
+  options: {}
+});
 
-module.exports = {
 
-  'Patcher': {
-    'new': {
-      '()': function() {
-        assert.instanceOf ( differ, require('../lib/') );
+// var helper = require('./helper'),
+//     assert = helper.assert,
+//     debug = helper.debug;
 
-        Differ.reset();
+// var Differ = require('../lib/'),
+//     differ = new Differ();
 
-        var differ2 = new Differ();
+// // -----------------------
+// //  Test
+// // --------------------
 
-        assert.equal ( differ2.url, null );
-        assert.typeOf ( differ2.options, 'object' );
-        assert.deepEqual ( differ2.options.custom, undefined );
-      },
+// module.exports = {
 
-      '(options)': function() {
-        Differ.reset();
+//   'Patcher': {
+//     'new': {
+//       '()': function() {
+//         assert.instanceOf ( differ, require('../lib/') );
 
-        var differ2 = new Differ({custom: {foo: 'bar'}});
+//         Differ.reset();
 
-        assert.equal ( differ2.url, null );
-        assert.typeOf ( differ2.options, 'object' );
-        assert.deepEqual ( differ2.options.custom, {foo: 'bar'} );
-      }
-    },
+//         var differ2 = new Differ();
 
-    '.klass': function() {
-      assert.property ( differ, 'klass' );
-      assert.equal ( differ.klass, Differ );
-    },
+//         assert.equal ( differ2.url, null );
+//         assert.typeOf ( differ2.options, 'object' );
+//         assert.deepEqual ( differ2.options.custom, undefined );
+//       },
 
-    '.defaults': function() {
-      assert.property ( Differ, 'defaults' );
+//       '(options)': function() {
+//         Differ.reset();
 
-      assert.equal ( Differ.defaults.url, null );
-      assert.typeOf ( Differ.defaults.options, 'object' );
-    },
+//         var differ2 = new Differ({custom: {foo: 'bar'}});
 
-    '.options': function() {
-      assert.property ( Differ, 'options' );
-      assert.typeOf ( Differ.options, 'object' );
-      assert.deepEqual ( Differ.options, {} );
-    },
+//         assert.equal ( differ2.url, null );
+//         assert.typeOf ( differ2.options, 'object' );
+//         assert.deepEqual ( differ2.options.custom, {foo: 'bar'} );
+//       }
+//     },
 
-    '.reset()': function() {
-      assert.property ( Differ, 'reset' );
-      assert.typeOf ( Differ.reset, 'function' );
+//     '.klass': function() {
+//       assert.property ( differ, 'klass' );
+//       assert.equal ( differ.klass, Differ );
+//     },
 
-      Differ.options = {foo: "bar"};
-      assert.deepEqual ( Differ.options, {foo: "bar"} );
+//     '.defaults': function() {
+//       assert.property ( Differ, 'defaults' );
 
-      Differ.reset();
+//       assert.equal ( Differ.defaults.url, null );
+//       assert.typeOf ( Differ.defaults.options, 'object' );
+//     },
 
-      assert.equal ( Differ.url, null );
-    }
-  },
+//     '.options': function() {
+//       assert.property ( Differ, 'options' );
+//       assert.typeOf ( Differ.options, 'object' );
+//       assert.deepEqual ( Differ.options, {} );
+//     },
 
-  'Patcher.prototype': {
-    '#options': function() {
-      assert.property ( differ, 'options' );
-      assert.typeOf ( differ.options, 'object' );
-    },
+//     '.reset()': function() {
+//       assert.property ( Differ, 'reset' );
+//       assert.typeOf ( Differ.reset, 'function' );
 
-    '#engine': function() {
-      assert.property ( differ, 'engine' );
-      assert.typeOf ( differ.engine, 'object' );
-    },
+//       Differ.options = {foo: "bar"};
+//       assert.deepEqual ( Differ.options, {foo: "bar"} );
 
-    '#diff': {
-      '': function() {
-        assert.property ( differ, 'diff' );
-        assert.typeOf ( differ.diff, 'function' );
-        assert.throws ( differ.diff, Error );
-      },
+//       Differ.reset();
 
-      '(a, b) - when original data': function(done) {
-        var a = {a: "foo", b: "bar"};
-        var b = {a: "foo", b: "bar"};
+//       assert.equal ( Differ.url, null );
+//     }
+//   },
 
-        differ.diff(a, b, function(err, diff, identical) {
-          assert.typeOf ( diff, 'null' );
-          assert.equal ( identical, true );
-          done();
-        });
-      },
+//   'Patcher.prototype': {
+//     '#options': function() {
+//       assert.property ( differ, 'options' );
+//       assert.typeOf ( differ.options, 'object' );
+//     },
 
-      '(a, b) - when changed data': function(done) {
-        var a = {a: "foo", b: "bar"};
-        var b = {a: "foo", b: "bar", c: "baz"};
+//     '#engine': function() {
+//       assert.property ( differ, 'engine' );
+//       assert.typeOf ( differ.engine, 'object' );
+//     },
 
-        differ.diff(a, b, function(err, diff, identical) {
-          assert.typeOf ( diff, 'object' );
-          assert.equal ( identical, false );
-          done();
-        });
-      },
+//     '#diff': {
+//       '': function() {
+//         assert.property ( differ, 'diff' );
+//         assert.typeOf ( differ.diff, 'function' );
+//         assert.throws ( differ.diff, Error );
+//       },
 
-      '(a, b, options) - when original data': function(done) {
-        var a = {a: "foo", b: "bar"};
-        var b = {a: "foo", b: "bar"};
+//       '(a, b) - when original data': function(done) {
+//         var a = {a: "foo", b: "bar"};
+//         var b = {a: "foo", b: "bar"};
 
-        differ.diff(a, b, {}, function(err, diff, identical) {
-          assert.typeOf ( diff, 'null' );
-          assert.equal ( identical, true );
-          done();
-        });
-      },
+//         differ.diff(a, b, function(err, diff, identical) {
+//           assert.typeOf ( diff, 'null' );
+//           assert.equal ( identical, true );
+//           done();
+//         });
+//       },
 
-      '(a, b, options) - when changed data': function(done) {
-        var a = {a: "foo", b: "bar"};
-        var b = {a: "foo", b: "bar", c: "baz"};
+//       '(a, b) - when changed data': function(done) {
+//         var a = {a: "foo", b: "bar"};
+//         var b = {a: "foo", b: "bar", c: "baz"};
 
-        differ.diff(a, b, {}, function(err, diff, identical) {
-          assert.typeOf ( diff, 'object' );
-          assert.equal ( identical, false );
-          done();
-        });
-      }
-    }
-  }
+//         differ.diff(a, b, function(err, diff, identical) {
+//           assert.typeOf ( diff, 'object' );
+//           assert.equal ( identical, false );
+//           done();
+//         });
+//       },
 
-};
+//       '(a, b, options) - when original data': function(done) {
+//         var a = {a: "foo", b: "bar"};
+//         var b = {a: "foo", b: "bar"};
+
+//         differ.diff(a, b, {}, function(err, diff, identical) {
+//           assert.typeOf ( diff, 'null' );
+//           assert.equal ( identical, true );
+//           done();
+//         });
+//       },
+
+//       '(a, b, options) - when changed data': function(done) {
+//         var a = {a: "foo", b: "bar"};
+//         var b = {a: "foo", b: "bar", c: "baz"};
+
+//         differ.diff(a, b, {}, function(err, diff, identical) {
+//           assert.typeOf ( diff, 'object' );
+//           assert.equal ( identical, false );
+//           done();
+//         });
+//       }
+//     }
+//   }
+
+// };
